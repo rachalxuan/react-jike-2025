@@ -4,12 +4,16 @@ import './index.scss';
 import App from './App';
 import { RouterProvider } from 'react-router-dom';
 import router from './router';
+import { Provider } from 'react-redux'
+import store from './store'
 
 // https://github.com/rachalxuan/react-jike-2025.git
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );
 
