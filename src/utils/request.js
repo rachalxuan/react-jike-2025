@@ -1,4 +1,7 @@
 import axios from "axios"
+import { getToken } from "@/utils/token"
+import { removeToken } from "@/utils/token"
+import router from "@/router"
 //axios的封装处理
 
 
@@ -14,6 +17,13 @@ const request = axios.create({
 // 添加请求拦截器 
 //在请求发送以前拦截 插入一些自定义配置 [参数的处理]
 request.interceptors.request.use((config) => {
+  //操作这个config 插入token数据
+  //1. 获取到token
+  //2. 按照后端的格式要求做token拼接
+  const token = getToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 }, (error) => {
   return Promise.reject(error)
@@ -28,6 +38,11 @@ request.interceptors.response.use((response) => {
 }, (error) => {
   // 超出 2xx 范围的状态码都会触发该函数。
   // 对响应错误做点什么
+  if (error.response.status === 401) {
+    removeToken()
+    router.navigate('/login')
+    window.location.reload()
+  }
   return Promise.reject(error)
 })
 
