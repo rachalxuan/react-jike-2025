@@ -1,7 +1,8 @@
 //和用户相关的状态管理
 import { createSlice } from '@reduxjs/toolkit'
-import { request } from '@/utils'
+
 import { getToken, removeToken, setToken as _setToken } from '@/utils'
+import { loginAPI, getProfileAPI } from '@/apis/user'
 
 const userStore = createSlice({
   name: 'user',
@@ -30,7 +31,7 @@ const { setToken, setUserInfo, clearUserInfo } = userStore.actions
 //异步
 const fetchLogin = (loginForm) => {
   return async (dispatch) => {
-    const res = await request.post('/authorizations', loginForm)
+    const res = await loginAPI(loginForm)
     console.log(res.data)
     dispatch(setToken(res.data.token))
 
@@ -38,7 +39,7 @@ const fetchLogin = (loginForm) => {
 }
 const fetchUserInfo = () => {
   return async (dispatch) => {
-    const res = await request.get('/user/profile')
+    const res = await getProfileAPI()
     dispatch(setUserInfo(res.data))
   }
 }
