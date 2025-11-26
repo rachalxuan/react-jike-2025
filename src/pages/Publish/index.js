@@ -16,13 +16,17 @@ import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { getChannelAPI } from "@/apis/article";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { createArticleAPI } from "@/apis/article";
 import { message } from "antd";
 import { useChannel } from "@/hooks/useChannel";
+=======
+>>>>>>> 5312469002b8c3323eb96d432406c970f6867c3a
 
 const { Option } = Select;
 
 const Publish = () => {
+<<<<<<< HEAD
   const { channelList } = useChannel()
 
   // 表单提交
@@ -57,6 +61,16 @@ const Publish = () => {
     setImageType(res)
 
   }
+=======
+  const [channelList, setChannelList] = useState([]);
+  useEffect(() => {
+    const getChannelList = async () => {
+      const res = await getChannelAPI();
+      setChannelList(res.data.channels);
+    };
+    getChannelList();
+  }, []);
+>>>>>>> 5312469002b8c3323eb96d432406c970f6867c3a
   return (
     <div className="publish">
       <Card
@@ -72,8 +86,12 @@ const Publish = () => {
         <Form
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
+<<<<<<< HEAD
           initialValues={{ type: 0 }}
           onFinish={onFinish}
+=======
+          initialValues={{ type: 1 }}
+>>>>>>> 5312469002b8c3323eb96d432406c970f6867c3a
         >
           <Form.Item
             label="标题"
@@ -96,6 +114,7 @@ const Publish = () => {
               ))}
             </Select>
           </Form.Item>
+<<<<<<< HEAD
           <Form.Item label="封面">
             <Form.Item name="type">
               <Radio.Group onChange={onTypeChange}>
@@ -117,6 +136,8 @@ const Publish = () => {
               </div>
             </Upload>}
           </Form.Item>
+=======
+>>>>>>> 5312469002b8c3323eb96d432406c970f6867c3a
           <Form.Item
             label="内容"
             name="content"

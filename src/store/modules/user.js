@@ -10,6 +10,7 @@ const userStore = createSlice({
     token: getToken() || '',
     userInfo: {}
   },
+  //   11111111111111111111
   reducers: {
     setToken(state, action) {
       state.userInfo = action.payload
