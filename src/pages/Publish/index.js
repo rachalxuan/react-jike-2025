@@ -15,10 +15,12 @@ import "./index.scss";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { getChannelAPI } from "@/apis/article";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { createArticleAPI } from "@/apis/article";
 import { message } from "antd";
 import { useChannel } from "@/hooks/useChannel";
+import { useSearchParams } from "react-router-dom";
+import { getArticleById, updateArticleAPI } from "@/apis/article";
 
 const { Option } = Select;
 
@@ -36,11 +38,28 @@ const Publish = () => {
       content,
       cover: {
         type: imageType,
-        images: imageList.map(item => item.response.data.url)
+        // 这个只是处理了新增的，如果是原来的图片，需要处理
+        images: imageList.map(item => {
+          if (item.response) {
+            return item.response.data.url
+          }
+          else {
+            return item.url
+          }
+
+        })
       },
       channel_id
     }
-    createArticleAPI(data)
+    //处理调用不同接口 新增调用新增接口 修改调用修改接口
+    if (articleId) {
+      data.id = articleId
+      //调用修改接口
+      updateArticleAPI(data)
+    } else {
+      createArticleAPI(data)
+    }
+
   }
   //上传图片
   const [imageList, setImageList] = useState([])
@@ -57,6 +76,33 @@ const Publish = () => {
     setImageType(res)
 
   }
+  //回填数据
+  const [searchParams] = useSearchParams()
+  const articleId = searchParams.get('id')
+  const [form] = Form.useForm()
+  useEffect(() => {
+    //获取id
+    //获取实例回填
+    async function getArticleDetail() {
+      const res = await getArticleById(articleId)
+      const data = res.data
+      console.log(data)
+
+      form.setFieldsValue({
+        //因为set方法要求传入对象
+        ...data,
+        type: data.cover.type
+
+      })
+
+      //回填图片
+      setImageType(data.cover.type)
+      setImageList(data.cover.images.map(url => { return { url } }))
+    }
+    if (articleId) {
+      getArticleDetail()
+    }
+  }, [articleId, form])
   return (
     <div className="publish">
       <Card
@@ -64,7 +110,7 @@ const Publish = () => {
           <Breadcrumb
             items={[
               { title: <Link to={"/"}>首页</Link> },
-              { title: "发布文章" },
+              { title: `${articleId ? '编辑文章' : '发布文章'}` },
             ]}
           />
         }
@@ -74,6 +120,7 @@ const Publish = () => {
           wrapperCol={{ span: 16 }}
           initialValues={{ type: 0 }}
           onFinish={onFinish}
+          form={form}
         >
           <Form.Item
             label="标题"
@@ -111,6 +158,7 @@ const Publish = () => {
               action={'http://geek.itheima.net/v1_0/upload'}
               name="image"
               onChange={onChange}
+              fileList={imageList}
             >
               <div style={{ marginTop: 8 }}>
                 <PlusOutlined />
